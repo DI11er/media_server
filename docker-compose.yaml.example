@@ -1,0 +1,81 @@
+version: '3.3'
+
+
+services:
+  # DLNA сервер
+  minidlna:
+    build:
+      context: ./docker/miniDLNA
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - /path/to/audio:/media/audio
+      - /path/to/videos:/media/video
+    environment:
+      - TZ="Europe/Moscow"
+      - MINIDLNA_MEDIA_DIR_1=A,/media/audio:ro # каталог с видео
+      - MINIDLNA_MEDIA_DIR_2=V,/media/video:ro # каталог с музыкой
+      - MINIDLNA_MEDIA_DIR_3=P,/media/image:ro # каталог с изображениями
+      - MINIDLNA_FRIENDLY_NAME=Home_Collection # Имя, отображаемое на ТВ и в сетевом расположении
+      - MINIDLNA_ROOT_CONTAINER=B # задает набор каталогов в главном каталоге
+      - MINIDLNA_MERGE_MEDIA_DIRS=yes
+      - MINIDLNA_FORCE_SORT_CRITERIA=upnp:class, upnp:originalTrackNumber, dc:title 
+    ports:
+      - 8200:8200 # GUI интерфейс
+
+  # Торрент загрузчик
+  transmission:
+    build: 
+      context: ./docker/transmission
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - TZ="Europe/Moscow" # временная зона 
+      # - TRANSMISSION_WEB_HOME= #optional
+      - USER="User" #optional
+      - PASS="1234" #optional
+      # - WHITELIST= #optional
+      # - PEERPORT= #optional
+      # - HOST_WHITELIST= #optional
+    volumes:
+      # - внешний каталог:внтренний каталог
+      - ./docker/transmission/data:/config # каталог с файлом конфигурации
+      - /path/to/downloads:/downloads # каталог с медиа файлами
+      - /path/to/watch/folder:/watch # каталог с торрент файлами
+    ports:
+      # - внешний пор:внутренний порт
+      - 9091:9091 # GUI интерфейс
+      - 51413:51413 # системные порт TCP
+      - 51413:51413/udp # системные порт UDP
+    # depends_on:
+    #   - miniDLNA
+
+  # торрент скрапер
+  monitorrent:
+    build:
+      context: ./docker/monitorrent
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    volumes:
+      - ./docker/monitorrent/database/monitorrent.db:/var/www/monitorrent/monitorrent.db # путь до базы данных
+    ports:
+      - 6687:6687 # GUI интерфейс
+    depends_on:
+      - transmission
+  
+  # Сервер расшаривания папок
+  samba:
+    build: 
+      context: ./docker/samba
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    network_mode: host
+    environment:
+      - name=value
+    volumes:
+      - ./docker/samba:/etc/samba
+      - /usr/local/docker/samba/share:/usr/local/share
+    ports:
+      - 139:139
+      - 445:445
