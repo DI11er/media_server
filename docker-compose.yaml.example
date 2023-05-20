@@ -13,16 +13,14 @@ services:
       - /path/to/audio:/media/audio
       - /path/to/videos:/media/video
     environment:
-      - TZ="Europe/Moscow"
+      - TZ=Europe/Moscow
       - MINIDLNA_MEDIA_DIR_1=A,/media/audio:ro # каталог с видео
       - MINIDLNA_MEDIA_DIR_2=V,/media/video:ro # каталог с музыкой
       - MINIDLNA_MEDIA_DIR_3=P,/media/image:ro # каталог с изображениями
       - MINIDLNA_FRIENDLY_NAME=Home_Collection # Имя, отображаемое на ТВ и в сетевом расположении
       - MINIDLNA_ROOT_CONTAINER=B # задает набор каталогов в главном каталоге
-      - MINIDLNA_MERGE_MEDIA_DIRS=yes
+      # - MINIDLNA_MERGE_MEDIA_DIRS=yes
       - MINIDLNA_FORCE_SORT_CRITERIA=upnp:class, upnp:originalTrackNumber, dc:title 
-    ports:
-      - 8200:8200 # GUI интерфейс
 
   # Торрент загрузчик
   transmission:
@@ -31,25 +29,26 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      - TZ="Europe/Moscow" # временная зона 
+      - TZ=Europe/Moscow # временная зона 
       # - TRANSMISSION_WEB_HOME= #optional
-      - USER="User" #optional
-      - PASS="1234" #optional
+      - USER=User #optional
+      - PASS=1234 #optional
       # - WHITELIST= #optional
       # - PEERPORT= #optional
       # - HOST_WHITELIST= #optional
     volumes:
       # - внешний каталог:внтренний каталог
-      - ./docker/transmission/data:/config # каталог с файлом конфигурации
-      - /path/to/downloads:/downloads # каталог с медиа файлами
-      - /path/to/watch/folder:/watch # каталог с торрент файлами
+      - ./docker/transmission/config:/config # каталог с файлом конфигурации
+      - /path/to/videos:/downloads/complete # каталог с загружеными медиа файлами
+      - /path/to/tmp:/downloads/incomplete # каталог с еще не загруженными медиа файлами
+      - /path/to/torrent:/watch # каталог с торрент файлами
     ports:
       # - внешний пор:внутренний порт
       - 9091:9091 # GUI интерфейс
       - 51413:51413 # системные порт TCP
       - 51413:51413/udp # системные порт UDP
-    # depends_on:
-    #   - miniDLNA
+    depends_on:
+      - miniDLNA
 
   # торрент скрапер
   monitorrent:
