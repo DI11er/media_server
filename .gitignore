@@ -1,3 +1,4 @@
 /docker/transmission/data/*
 /docker/monitorrent/DataBase/*
 /docker/samba/*.conf
+docker-compose.yaml
