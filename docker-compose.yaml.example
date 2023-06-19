@@ -71,7 +71,7 @@ services:
     restart: unless-stopped
     network_mode: host
     volumes:
-      - ./docker/samba/config:/data
+      - ./docker/samba/data:/data
       - ./foo:/samba/foo
     environment:
       - BROWSABLE=yes
