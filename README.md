@@ -1,1 +1,1 @@
-DLNA_Server
+media_server
