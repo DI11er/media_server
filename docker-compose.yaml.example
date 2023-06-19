@@ -70,11 +70,9 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     network_mode: host
-    environment:
-      - name=value
     volumes:
-      - ./docker/samba:/etc/samba
-      - /usr/local/docker/samba/share:/usr/local/share
-    ports:
-      - 139:139
-      - 445:445
+      - ./docker/samba/config:/data
+      - ./foo:/samba/foo
+    environment:
+      - BROWSABLE=yes
+    restart: always
