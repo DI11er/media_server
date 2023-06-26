@@ -22,6 +22,24 @@ services:
       # - MINIDLNA_MERGE_MEDIA_DIRS=yes
       - MINIDLNA_FORCE_SORT_CRITERIA=upnp:class, upnp:originalTrackNumber, dc:title 
 
+  # Медиа сервер с DLNA
+  plex:
+    build:
+      context: ./docker/plex
+      dockerfile: Dockerfile
+    network_mode: host
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Moscow
+      - VERSION=docker
+      # - PLEX_CLAIM= #optional
+    volumes:
+      - /path/to/library:/config
+      - /path/to/tvseries:/tv
+      - /path/to/movies:/movies
+    restart: unless-stopped
+
   # Торрент загрузчик
   transmission:
     build: 
