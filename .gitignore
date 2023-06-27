@@ -1,4 +1,4 @@
-/docker/transmission/data/*
-/docker/monitorrent/DataBase/*
+/docker/transmission/config/*
+/docker/monitorrent/database/*
 /docker/samba/*.conf
 docker-compose.yaml
