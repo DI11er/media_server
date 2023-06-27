@@ -1,1 +1,1 @@
-FROM werwolfby/alpine-monitorrent
+FROM werwolfby/monitorrent
