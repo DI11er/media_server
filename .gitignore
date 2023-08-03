@@ -1,4 +1,6 @@
-/docker/transmission/config/*
-/docker/monitorrent/database/*
-/docker/samba/*.conf
+/docker/transmission/config
+/docker/monitorrent/database
+/docker/samba/data/cache
+/docker/samba/data/lib
+/docker/plex/config
 docker-compose.yaml
