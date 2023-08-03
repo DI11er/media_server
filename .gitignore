@@ -2,5 +2,6 @@
 /docker/monitorrent/database
 /docker/samba/data/cache
 /docker/samba/data/lib
+/docker/samba/data/config.yml
 /docker/plex/config
 docker-compose.yaml
