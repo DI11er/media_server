@@ -17,7 +17,7 @@ services:
     volumes:
       - ./docker/plex/config:/config
       # - /path/to/tvseries:/tv
-      - ~/media:/movies
+      - /path/to/media:/movies
     restart: unless-stopped
 
   # Торрент загрузчик
@@ -39,9 +39,9 @@ services:
     volumes:
       # - внешний каталог:внтренний каталог
       - ./docker/transmission/config:/config # каталог с файлом конфигурации
-      - ~/media/downloads:/downloads/complete # каталог с загружеными медиа файлами
+      - /path/to/downloads:/downloads/complete # каталог с загружеными медиа файлами
       - /tmp:/downloads/incomplete # каталог с еще не загруженными медиа файлами
-      - ~/torrent:/watch # каталог с торрент файлами
+      - /path/to/torrents:/watch # каталог с торрент файлами
     ports:
       # - внешний пор:внутренний порт
       - 9091:9091 # GUI интерфейс
@@ -57,7 +57,9 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     volumes:
-      - ./docker/monitorrent/database/monitorrent.db:/var/www/monitorrent/monitorrent.db # путь до базы данных
+      - ./docker/monitorrent/database/:/db # путь до базы данных
+    environment:
+      - MONITORRENT_DB_PATH=/db/monitorrent.db
     ports:
       - 6687:6687 # GUI интерфейс
     depends_on:
@@ -73,5 +75,6 @@ services:
     volumes:
       - ./docker/samba/data:/data
       - ./foo:/samba/foo
+      - ./share:/samba/share
     environment:
       - TZ=Europe/Moscow
