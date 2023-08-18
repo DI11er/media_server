@@ -2,18 +2,23 @@
 
 # Считывание файлов из папки 
 
-base_dir=~/media
-search_dir=~/downloads
-films_dir=$base_dir/films
-serials_dir=$base_dir/serials
-other_dir=~/other
+base_dir=~
+
+sub_dir=$base_dir/media
+
+search_dir=$base_dir/downloads
+
+films_dir=$sub_dir/films
+serials_dir=$sub_dir/serials
+
+other_dir=$base_dir/other
 
 
 function SerialProcess () {
     echo "[INFO] SerialProcessStart"
-    name_serial=$(echo ${1##*/} | grep -P -o "[a-zA-Z]*" | head -1)
-    season=$(echo ${1##*/} | grep -P "[Ss]\d\d" -o | grep -P "[1-9]" -o)
-    
+    name_serial=$(echo ${1##*/} | grep -P -o "[^\.]+" | head -1 | sed "s/[[:space:]]+//g")
+    season=$(echo ${1##*/} | grep -P -o "\d+" | head -1)
+   
     path_to_dir="$serials_dir/$name_serial/season_$season"
     
     echo "[INFO] Name_serial $name_serial season $season path_to_dir $path_to_dir"
@@ -51,24 +56,25 @@ function checking () {
 }
 
 
-for entry in "$search_dir"/*
-do
+for entry in $search_dir/*; do
     if [[ -f $entry ]]; then
-	checking $entry
+    	checking $entry
     elif [[ -d $entry ]]; then
-    	for i in "$entry"/*
-        do
+    	for i in $entry/* $entry/**/*; do
             checking $i
         done
-	if [[ -d $entry && "$(ls -A "$entry" 2> /dev/null)" == "" ]]; then
-	    echo "[INFO] remove empti dir $entry"
-            rm -rf $entry
-	fi	
     fi	
 done
 
+for entry in $search_dir/* $search_dir/**/*; do
+    if [[ -d $entry && "$(ls -A $i 2> /dev/null)" == "" ]]; then
+        echo "[INFO] remove empti dir $entry"
+	rm -rf $entry
+    fi
+done
+
 if [[ "$(ls -A "$search_dir" 2> /dev/null)" != "" ]]; then
-	echo "[INFO] move $search_dir to $other_dir"  	
+    echo "[INFO] move $search_dir to $other_dir"  	
     mv "$search_dir"/* "$other_dir/"
 fi
 
